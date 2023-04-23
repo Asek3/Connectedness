@@ -20,14 +20,15 @@ import com.google.gson.JsonParser;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectBidirectionalIterator;
+import me.pepperbell.continuity.client.ContinuityClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 public class ContinuityConfig {
-	protected static final Logger LOGGER = LoggerFactory.getLogger("Continuity Config");
+	protected static final Logger LOGGER = LoggerFactory.getLogger("Connectedness Config");
 	protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	public static final ContinuityConfig INSTANCE = new ContinuityConfig(FMLPaths.CONFIGDIR.get().resolve("continuity.json").toFile());
+	public static final ContinuityConfig INSTANCE = new ContinuityConfig(FMLPaths.CONFIGDIR.get().resolve(ContinuityClient.ID + ".json").toFile());
 	static {
 		INSTANCE.load();
 	}

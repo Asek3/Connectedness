@@ -69,8 +69,7 @@ public final class RenderUtil {
 
 	public static class ReloadListener implements SynchronousResourceReloader {
 		public static final Identifier ID = ContinuityClient.asId("render_util");
-		// TODO I am not sure how to realize this
-		//public static final List<Identifier> DEPENDENCIES = List.of(ResourceReloadListenerKeys.MODELS);
+		
 		private static final ReloadListener INSTANCE = new ReloadListener();
 
 		@ApiStatus.Internal
@@ -82,11 +81,6 @@ public final class RenderUtil {
 		public void addListener(AddReloadListenerEvent event) {
 			event.addListener(this);
 		}
-
-		/*@Override
-		public Collection<Identifier> getFabricDependencies() {
-			return DEPENDENCIES;
-		}*/
 
 		@Override
 		public void reload(ResourceManager manager) {

@@ -49,9 +49,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.resource.PathPackResources;
 
 @Mod(ContinuityClient.ID)
@@ -68,8 +71,9 @@ public class ContinuityClient {
 		RenderUtil.ReloadListener.init();
 		CustomBlockLayers.ReloadListener.init();
 		
-		//MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().register(this);
+		
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
 		// Regular methods
 

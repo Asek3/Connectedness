@@ -64,17 +64,6 @@ public class ModelLoaderMixin {
 		GeometryLoaderManager.init();
     }
 
-	/*@Inject(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = "ldc=missing_model", shift = At.Shift.BEFORE))
-	private void continuity$afterStoreArgs(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci) {
-		// TODO: move these to the very beginning of resource reload
-		ResourcePackUtil.setup(resourceManager);
-		BiomeHolderManager.clearCache();
-
-		EmissiveSuffixLoader.load(resourceManager);
-		CTMPropertiesLoader.clearAll();
-		CTMPropertiesLoader.loadAll(resourceManager);
-	}*/
-
 	@Inject(method = "m_119263_(Lnet/minecraft/block/BlockState;)V", at = @At("HEAD"))
 	private void continuity$onAddBlockStateModel(BlockState state, CallbackInfo ci) {
 		continuity$currentBlockState = state;
@@ -93,11 +82,6 @@ public class ModelLoaderMixin {
 		ModelWrappingHandler.wrapCTMModels(unbakedModels, modelsToBake);
 		redirectedProfiler.swap(value);
 	}
-
-	/*@Inject(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=textures"))
-	private void continuity$onFinishAddingModels(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci) {
-		ModelWrappingHandler.wrapCTMModels(unbakedModels, modelsToBake);
-	}*/
 
 	@Inject(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At("TAIL"))
 	private void continuity$onTailInit(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci) {
