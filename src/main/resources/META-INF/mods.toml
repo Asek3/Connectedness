@@ -11,3 +11,8 @@ Connectedness is a fork of Contuinity built around modern APIs to allow for the 
 '''
 credits="Asek3, Pepper_Bell"
 authors="Pepper_Bell"
+
+[[dependencies.connectedness]]
+    modId="reforgium"
+    mandatory=true
+    versionRange="[1.0.12,)"
