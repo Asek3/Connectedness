@@ -38,8 +38,8 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class BaseCTMProperties implements CTMProperties {
 	public static final Identifier SPECIAL_SKIP_ID = ContinuityClient.asId("special/skip");
@@ -170,7 +170,7 @@ public class BaseCTMProperties implements CTMProperties {
 			if (baseName.startsWith("block_")) {
 				try {
 					Identifier id = new Identifier(baseName.substring(6));
-					Block block = Registry.BLOCK.get(id);
+					Block block = ForgeRegistries.BLOCKS.getValue(id);
 					if (block != Blocks.AIR) {
 						matchBlocksPredicate = state -> state.getBlock() == block;
 					}

@@ -1,87 +1,61 @@
 plugins {
-	id 'fabric-loom' version "${loom_version}"
+	id 'dev.architectury.loom' version '0.11.0-SNAPSHOT'
 	id 'maven-publish'
+}
+
+loom {
+    silentMojangMappingsLicense()
+	forge {
+		mixinConfigs = [
+			"connectedness.mixins.json"
+		]
+	}
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version + '+' + project.mod_minecraft_version + getExtraBuildMetadata()
+version = project.mod_version
 group = project.maven_group
 
 repositories {
 	maven {
-		name 'TerraformersMC'
-		url 'https://maven.terraformersmc.com'
-	}
-	maven {
-		name 'Modrinth'
-		url 'https://api.modrinth.com/maven'
-	}
-	maven {
-		url 'https://maven.vram.io'
-	}
-	maven {
-		name 'Shedaniel'
-		url 'https://maven.shedaniel.me'
+		url = "https://api.modrinth.com/maven"
 	}
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modImplementation('com.terraformersmc:modmenu:4.0.4') {
-		exclude group: 'net.fabricmc.fabric-api'
-	}
-
-	modCompileOnly 'maven.modrinth:sodium:mc1.19-0.4.2'
-	modCompileOnly 'maven.modrinth:indium:1.0.7+mc1.19'
-	modCompileOnly 'io.vram:frex-fabric-mc119:6.0.278'
-	modCompileOnly 'io.vram:canvas-fabric-mc119:1.0.2453'
-}
-
-String getExtraBuildMetadata() {
-	String buildNumber = System.getenv('GITHUB_RUN_NUMBER')
-	if (buildNumber != null) {
-		return "-build.${buildNumber}"
-	}
-	return ''
+	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+	
+	modImplementation "maven.modrinth:rubidium:${project.rubidium_version}"
+	modImplementation "maven.modrinth:reforgium:${project.reforgium_version}"
 }
 
 processResources {
-	inputs.property 'version', project.version
+	inputs.property "version", project.version
 
-	filesMatching('fabric.mod.json') {
-		expand 'version': project.version
-	}
+	filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release.set(17)
+	it.options.release = 17
 }
 
 java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 
 jar {
-	from('LICENSE') {
-		rename { "${it}_${project.archivesBaseName}" }
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
 	}
 }
 
-// configure the maven publication
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
@@ -89,11 +63,6 @@ publishing {
 		}
 	}
 
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }

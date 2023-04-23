@@ -81,7 +81,7 @@ public class StandardOverlayQuadProcessor extends AbstractQuadProcessor {
 			}
 		}
 		if (connectTilesSet != null) {
-			if (!connectTilesSet.contains(SpriteCalculator.getSprite(other, face).getId())) {
+			if (!connectTilesSet.contains(SpriteCalculator.getSprite(other, face, blockView, pos).getId())) {
 				return false;
 			}
 		}
@@ -95,7 +95,7 @@ public class StandardOverlayQuadProcessor extends AbstractQuadProcessor {
 			}
 		}
 		if (matchTilesSet != null) {
-			if (!matchTilesSet.contains(SpriteCalculator.getSprite(other, face).getId())) {
+			if (!matchTilesSet.contains(SpriteCalculator.getSprite(other, face, blockView, pos).getId())) {
 				return false;
 			}
 		}

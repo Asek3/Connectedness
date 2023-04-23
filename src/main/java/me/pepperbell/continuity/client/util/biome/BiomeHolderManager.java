@@ -5,11 +5,12 @@ import java.util.Map;
 import org.jetbrains.annotations.ApiStatus;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import me.pepperbell.continuity.client.util.ClientJoinEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.MinecraftForge;
 
 public final class BiomeHolderManager {
 	private static final Map<Identifier, BiomeHolder> HOLDER_CACHE = new Object2ObjectOpenHashMap<>();
@@ -26,10 +27,12 @@ public final class BiomeHolderManager {
 
 	@ApiStatus.Internal
 	public static void init() {
-		ClientPlayConnectionEvents.JOIN.register(((handler, sender, client) -> {
-			registryManager = handler.getRegistryManager();
-			refreshHolders();
-		}));
+		MinecraftForge.EVENT_BUS.addListener(BiomeHolderManager::worldJoin);
+	}
+	
+	public static void worldJoin(ClientJoinEvent event) {
+		registryManager = event.getHandler().getRegistryManager();
+		refreshHolders();
 	}
 
 	public static void refreshHolders() {

@@ -75,7 +75,7 @@ public class ConnectingCTMProperties extends BaseCTMProperties {
 				if (state == toState) {
 					return true;
 				}
-				return quadSprite == SpriteCalculator.getSprite(toState, face);
+				return quadSprite == SpriteCalculator.getSprite(toState, face, blockView, pos);
 			}
 		},
 		MATERIAL {

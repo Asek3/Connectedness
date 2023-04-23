@@ -17,7 +17,8 @@
     "RenderLayersMixin",
     "SpriteAtlasTextureDataMixin",
     "SpriteAtlasTextureMixin",
-    "SpriteMixin"
+    "SpriteMixin",
+	"ClientPlayNetworkHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

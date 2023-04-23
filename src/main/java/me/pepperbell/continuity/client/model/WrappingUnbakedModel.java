@@ -46,7 +46,7 @@ public abstract class WrappingUnbakedModel implements UnbakedModel {
 
 		Map<Identifier, UnbakedModel> unbakedModels = ((ModelLoaderAccessor) loader).getUnbakedModels();
 		UnbakedModel previous = unbakedModels.replace(modelId, wrapped);
-		BakedModel bakedWrapped = loader.bake(modelId, rotationContainer);
+		BakedModel bakedWrapped = loader.bake(modelId, rotationContainer, textureGetter);
 		unbakedModels.replace(modelId, previous);
 
 		BakedModel baked = wrapBaked(bakedWrapped, loader, textureGetter, rotationContainer, modelId);

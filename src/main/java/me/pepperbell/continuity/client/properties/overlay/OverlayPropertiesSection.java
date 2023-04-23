@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class OverlayPropertiesSection {
 	protected Properties properties;
@@ -71,7 +71,7 @@ public class OverlayPropertiesSection {
 				return;
 			}
 
-			Block block = Registry.BLOCK.get(blockId);
+			Block block = ForgeRegistries.BLOCKS.getValue(blockId);
 			if (block != Blocks.AIR) {
 				tintBlock = block.getDefaultState();
 			} else {

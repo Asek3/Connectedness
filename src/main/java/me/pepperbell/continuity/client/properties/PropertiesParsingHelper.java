@@ -23,7 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.registry.Registry;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public final class PropertiesParsingHelper {
 	public static final Predicate<BlockState> EMPTY_BLOCK_STATE_PREDICATE = state -> false;
@@ -128,7 +128,7 @@ public final class PropertiesParsingHelper {
 							continue;
 						}
 
-						Block block = Registry.BLOCK.get(blockId);
+						Block block = ForgeRegistries.BLOCKS.getValue(blockId);
 						if (block != Blocks.AIR) {
 							if (parts.length > startIndex) {
 								ImmutableMap.Builder<Property<?>, Comparable<?>[]> propertyMapBuilder = ImmutableMap.builder();

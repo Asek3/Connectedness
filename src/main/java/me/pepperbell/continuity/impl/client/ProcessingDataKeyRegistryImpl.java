@@ -12,8 +12,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.pepperbell.continuity.api.client.ProcessingDataKey;
 import me.pepperbell.continuity.api.client.ProcessingDataKeyRegistry;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.minecraft.util.Identifier;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public final class ProcessingDataKeyRegistryImpl implements ProcessingDataKeyRegistry {
 	public static final ProcessingDataKeyRegistryImpl INSTANCE = new ProcessingDataKeyRegistryImpl();
@@ -55,7 +56,11 @@ public final class ProcessingDataKeyRegistryImpl implements ProcessingDataKeyReg
 	}
 
 	public void init() {
-		ClientLifecycleEvents.CLIENT_STARTED.register(client -> frozen = true);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
+	}
+	
+	public void clientSetup(FMLClientSetupEvent event) {
+		frozen = true;
 	}
 
 	public List<ProcessingDataKey<?>> getAllResettable() {

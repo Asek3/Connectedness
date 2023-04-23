@@ -12,16 +12,17 @@ import org.jetbrains.annotations.Nullable;
 
 import me.pepperbell.continuity.client.ContinuityClient;
 import me.pepperbell.continuity.client.properties.PropertiesParsingHelper;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EmptyBlockView;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public final class CustomBlockLayers {
 	public static final Identifier LOCATION = new Identifier("optifine/block.properties");
@@ -84,23 +85,23 @@ public final class CustomBlockLayers {
 		}
 	}
 
-	public static class ReloadListener implements SimpleSynchronousResourceReloadListener {
+	public static class ReloadListener implements SynchronousResourceReloader {
 		public static final Identifier ID = ContinuityClient.asId("custom_block_layers");
 		private static final ReloadListener INSTANCE = new ReloadListener();
 
 		@ApiStatus.Internal
 		public static void init() {
-			ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(INSTANCE);
+			MinecraftForge.EVENT_BUS.register(INSTANCE);
+		}
+
+		@SubscribeEvent
+		public void addListener(AddReloadListenerEvent event) {
+			event.addListener(this);
 		}
 
 		@Override
 		public void reload(ResourceManager manager) {
 			CustomBlockLayers.reload(manager);
-		}
-
-		@Override
-		public Identifier getFabricId() {
-			return ID;
 		}
 	}
 

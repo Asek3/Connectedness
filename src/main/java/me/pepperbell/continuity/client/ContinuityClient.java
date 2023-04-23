@@ -1,5 +1,7 @@
 package me.pepperbell.continuity.client;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,30 +41,35 @@ import me.pepperbell.continuity.client.util.RenderUtil;
 import me.pepperbell.continuity.client.util.biome.BiomeHolderManager;
 import me.pepperbell.continuity.client.util.biome.BiomeRetriever;
 import me.pepperbell.continuity.impl.client.ProcessingDataKeyRegistryImpl;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraftforge.event.AddPackFindersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.resource.PathPackResources;
 
-public class ContinuityClient implements ClientModInitializer {
-	public static final String ID = "continuity";
-	public static final String NAME = "Continuity";
+@Mod(ContinuityClient.ID)
+public class ContinuityClient {
+	public static final String ID = "connectedness";
+	public static final String NAME = "Connectedness";
 	public static final Logger LOGGER = LoggerFactory.getLogger(NAME);
 
-	@Override
-	public void onInitializeClient() {
+	public ContinuityClient() {		
 		ProcessingDataKeyRegistryImpl.INSTANCE.init();
 		BiomeHolderManager.init();
 		BiomeRetriever.init();
 		ProcessingDataKeys.init();
 		RenderUtil.ReloadListener.init();
 		CustomBlockLayers.ReloadListener.init();
-
-		FabricLoader.getInstance().getModContainer(ID).ifPresent(container -> {
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("default"), container, ResourcePackActivationType.NORMAL);
-			ResourceManagerHelper.registerBuiltinResourcePack(asId("glass_pane_culling_fix"), container, ResourcePackActivationType.NORMAL);
-		});
+		
+		//MinecraftForge.EVENT_BUS.register(this);
+		FMLJavaModLoadingContext.get().getModEventBus().register(this);
 
 		// Regular methods
 
@@ -220,4 +227,43 @@ public class ContinuityClient implements ClientModInitializer {
 	public static Identifier asId(String path) {
 		return new Identifier(ID, path);
 	}
+	
+	@SubscribeEvent
+	public void addDefaultPack(AddPackFindersEvent event) {
+		try {
+			if (event.getPackType() == ResourceType.CLIENT_RESOURCES) {
+				var resourcePath = ModList.get().getModFileById(ID).getFile().findResource("resourcepacks/default");
+				var pack = new PathPackResources(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
+				var metadataSection = pack.parseMetadata(PackResourceMetadata.READER);
+				if (metadataSection != null) {
+					event.addRepositorySource((packConsumer, packConstructor) ->
+							packConsumer.accept(packConstructor.create(
+									"builtin/default_ctm_resources", Text.literal("Default CTM"), false,
+									() -> pack, metadataSection, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN, false)));
+				}
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	@SubscribeEvent
+	public void addGlassPack(AddPackFindersEvent event) {
+		try {
+			if (event.getPackType() == ResourceType.CLIENT_RESOURCES) {
+				var resourcePath = ModList.get().getModFileById(ID).getFile().findResource("resourcepacks/glass_pane_culling_fix");
+				var pack = new PathPackResources(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
+				var metadataSection = pack.parseMetadata(PackResourceMetadata.READER);
+				if (metadataSection != null) {
+					event.addRepositorySource((packConsumer, packConstructor) ->
+							packConsumer.accept(packConstructor.create(
+									"builtin/glass_pane_fix_resources", Text.literal("Glass pane culling fix"), false,
+									() -> pack, metadataSection, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN, false)));
+				}
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 }

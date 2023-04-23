@@ -15,8 +15,11 @@ import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.BlockRenderView;
+import net.minecraftforge.client.model.data.ModelData;
 
 public final class SpriteCalculator {
 	private static final BlockModels MODELS = MinecraftClient.getInstance().getBakedModelManager().getBlockModels();
@@ -28,18 +31,19 @@ public final class SpriteCalculator {
 		}
 	}
 
-	public static Sprite getSprite(BlockState state, Direction face) {
-		return SPRITE_CACHES.get(face).getSprite(state);
+	public static Sprite getSprite(BlockState state, Direction face, BlockRenderView view, BlockPos pos) {
+		return SPRITE_CACHES.get(face).getSprite(state, view, pos);
 	}
 
-	public static Sprite calculateSprite(BlockState state, Direction face, Supplier<Random> randomSupplier) {
+	public static Sprite calculateSprite(BlockState state, Direction face, Supplier<Random> randomSupplier, BlockRenderView view, BlockPos pos) {
 		BakedModel model = MODELS.getModel(state);
+		ModelData data = model.getModelData(view, pos, state, ModelData.EMPTY);
 		try {
-			List<BakedQuad> quads = model.getQuads(state, face, randomSupplier.get());
+			List<BakedQuad> quads = model.getQuads(state, face, randomSupplier.get(), data, null);
 			if (!quads.isEmpty()) {
 				return quads.get(0).getSprite();
 			}
-			quads = model.getQuads(state, null, randomSupplier.get());
+			quads = model.getQuads(state, null, randomSupplier.get(), data, null);
 			if (!quads.isEmpty()) {
 				int amount = quads.size();
 				for (int i = 0; i < amount; i++) {
@@ -52,7 +56,7 @@ public final class SpriteCalculator {
 		} catch (Exception e) {
 			//
 		}
-		return model.getParticleSprite();
+		return model.getParticleIcon(data);
 	}
 
 	@ApiStatus.Internal
@@ -81,7 +85,7 @@ public final class SpriteCalculator {
 			this.face = face;
 		}
 
-		public Sprite getSprite(BlockState state) {
+		public Sprite getSprite(BlockState state, BlockRenderView view, BlockPos pos) {
 			Sprite sprite;
 			long readStamp = lock.readLock();
 			try {
@@ -92,7 +96,7 @@ public final class SpriteCalculator {
 			if (sprite == null) {
 				long writeStamp = lock.writeLock();
 				try {
-					sprite = calculateSprite(state, face, randomSupplier);
+					sprite = calculateSprite(state, face, randomSupplier, view, pos);
 					sprites.put(state, sprite);
 				} finally {
 					lock.unlockWrite(writeStamp);

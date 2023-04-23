@@ -1,0 +1,13 @@
+modLoader="javafml"
+loaderVersion="[39,)"
+license="LGPL-3.0-only"
+[[mods]]
+modId="connectedness"
+version="${version}"
+displayName="Connectedness"
+logoFile="icon.png"
+description='''
+Connectedness is a fork of Contuinity built around modern APIs to allow for the most efficient connected textures experience possible. It is designed to provide full Optifine parity for all resource packs that use the Optifine CTM format. Continuity also supports Optifine-format emissive textures for block and item models.
+'''
+credits="Asek3, Pepper_Bell"
+authors="Pepper_Bell"
