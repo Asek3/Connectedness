@@ -35,7 +35,6 @@ import me.pepperbell.continuity.client.properties.overlay.RepeatOverlayCTMProper
 import me.pepperbell.continuity.client.properties.overlay.StandardConnectingOverlayCTMProperties;
 import me.pepperbell.continuity.client.properties.overlay.StandardOverlayCTMProperties;
 import me.pepperbell.continuity.client.resource.CustomBlockLayers;
-import me.pepperbell.continuity.client.resource.EmissiveIdProvider;
 import me.pepperbell.continuity.client.util.RenderUtil;
 import me.pepperbell.continuity.client.util.biome.BiomeHolderManager;
 import me.pepperbell.continuity.client.util.biome.BiomeRetriever;
@@ -56,7 +55,6 @@ public class ContinuityClient implements ClientModInitializer {
 		ProcessingDataKeyRegistryImpl.INSTANCE.init();
 		BiomeHolderManager.init();
 		BiomeRetriever.init();
-		EmissiveIdProvider.init();
 		ProcessingDataKeys.init();
 		RenderUtil.ReloadListener.init();
 		CustomBlockLayers.ReloadListener.init();

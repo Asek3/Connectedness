@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.pepperbell.continuity.client.mixinterface.SpriteAtlasTextureDataExtension;
 import me.pepperbell.continuity.client.mixinterface.SpriteExtension;
-import me.pepperbell.continuity.client.resource.EmissiveIdProvider;
 import me.pepperbell.continuity.client.resource.EmissiveSuffixLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -58,8 +57,8 @@ public class SpriteAtlasTextureMixin {
 				continuity$emissiveIdMap = new Object2ObjectOpenHashMap<>();
 				for (Sprite.Info spriteInfo : spriteInfos) {
 					Identifier id = spriteInfo.getId();
-					Identifier emissiveId = EmissiveIdProvider.toEmissiveId(id, emissiveSuffix);
-					if (emissiveId != null) {
+					if (!id.getPath().endsWith(emissiveSuffix)) {
+						Identifier emissiveId = new Identifier(id.getNamespace(), id.getPath() + emissiveSuffix);
 						Identifier emissiveLocation = getTexturePath(emissiveId);
 						if (resourceManager.getResource(emissiveLocation).isPresent()) {
 							emissiveIds.add(emissiveId);

@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 import grondag.canvas.terrain.region.input.InputRegion;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
-import me.pepperbell.continuity.client.mixinterface.ChunkRendererRegionExtension;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.render.chunk.ChunkRendererRegion;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +41,7 @@ public final class BiomeRetriever {
 			return BiomeRetriever::getBiomeByWorldView;
 		}
 
-		if (ArrayUtils.contains(ChunkRendererRegion.class.getInterfaces(), ChunkRendererRegionExtension.class)) {
+		if (ArrayUtils.contains(ChunkRendererRegion.class.getInterfaces(), BiomeView.class)) {
 			return BiomeRetriever::getBiomeByExtension;
 		}
 		return BiomeRetriever::getBiomeByWorldView;
@@ -57,7 +56,6 @@ public final class BiomeRetriever {
 	public static void init() {
 	}
 
-	@Nullable
 	private static Biome getBiomeByWorldView(BlockRenderView blockView, BlockPos pos) {
 		if (blockView instanceof WorldView worldView) {
 			return worldView.getBiome(pos).value();
@@ -65,16 +63,14 @@ public final class BiomeRetriever {
 		return null;
 	}
 
-	@Nullable
 	private static Biome getBiomeByExtension(BlockRenderView blockView, BlockPos pos) {
-		if (blockView instanceof ChunkRendererRegionExtension extension) {
-			return extension.continuity$getBiome(pos).value();
+		if (blockView instanceof BiomeView biomeView) {
+			return biomeView.continuity$getBiome(pos).value();
 		}
 		return getBiomeByWorldView(blockView, pos);
 	}
 
 	// Sodium
-	@Nullable
 	private static Biome getBiomeByWorldSlice(BlockRenderView blockView, BlockPos pos) {
 		if (blockView instanceof WorldSlice worldSlice) {
 			return worldSlice.getBiomeAccess().getBiome(pos).value();
@@ -83,7 +79,6 @@ public final class BiomeRetriever {
 	}
 
 	// Canvas
-	@Nullable
 	private static Biome getBiomeByInputRegion(BlockRenderView blockView, BlockPos pos) {
 		if (blockView instanceof InputRegion inputRegion) {
 			return inputRegion.getBiome(pos);
@@ -92,7 +87,6 @@ public final class BiomeRetriever {
 	}
 
 	private interface Provider {
-		@Nullable
 		Biome getBiome(BlockRenderView blockView, BlockPos pos);
 	}
 }
