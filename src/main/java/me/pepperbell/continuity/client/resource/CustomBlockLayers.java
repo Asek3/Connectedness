@@ -20,9 +20,9 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EmptyBlockView;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public final class CustomBlockLayers {
 	public static final Identifier LOCATION = new Identifier("optifine/block.properties");
@@ -91,12 +91,12 @@ public final class CustomBlockLayers {
 
 		@ApiStatus.Internal
 		public static void init() {
-			MinecraftForge.EVENT_BUS.register(INSTANCE);
+			FMLJavaModLoadingContext.get().getModEventBus().register(INSTANCE);
 		}
 
 		@SubscribeEvent
-		public void addListener(AddReloadListenerEvent event) {
-			event.addListener(this);
+		public void addListener(RegisterClientReloadListenersEvent event) {
+			event.registerReloadListener(this);
 		}
 
 		@Override

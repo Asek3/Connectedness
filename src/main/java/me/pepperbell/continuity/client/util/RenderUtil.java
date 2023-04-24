@@ -20,10 +20,11 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public final class RenderUtil {
 	private static final BlockColors BLOCK_COLORS = MinecraftClient.getInstance().getBlockColors();
@@ -69,17 +70,16 @@ public final class RenderUtil {
 
 	public static class ReloadListener implements SynchronousResourceReloader {
 		public static final Identifier ID = ContinuityClient.asId("render_util");
-		
 		private static final ReloadListener INSTANCE = new ReloadListener();
 
 		@ApiStatus.Internal
 		public static void init() {
-			MinecraftForge.EVENT_BUS.register(INSTANCE);
+			FMLJavaModLoadingContext.get().getModEventBus().register(INSTANCE);
 		}
 		
 		@SubscribeEvent
-		public void addListener(AddReloadListenerEvent event) {
-			event.addListener(this);
+		public void addListener(RegisterClientReloadListenersEvent event) {
+			event.registerReloadListener(this);
 		}
 
 		@Override
