@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Continuity seadistus",
+  "options.continuity.title": "Connectedness seadistus",
   "options.continuity.connected_textures": "Ühendatud tekstuurid",
   "options.continuity.connected_textures.tooltip": "Luba või keela plokkide ühendatud tekstuurid.",
   "options.continuity.emissive_textures": "Hõõguvad tekstuurid",

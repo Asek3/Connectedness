@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Continuity Konfiguration",
+  "options.continuity.title": "Connectedness Konfiguration",
   "options.continuity.connected_textures": "Verbundene Texturen",
   "options.continuity.connected_textures.tooltip": "Aktiviert oder deaktiviert verbundene Texturen für Blöcke.",
   "options.continuity.emissive_textures": "Leuchtende Texturen",

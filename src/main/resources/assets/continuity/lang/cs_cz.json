@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Konfigurovat Continuity",
+  "options.continuity.title": "Konfigurovat Connectedness",
   "options.continuity.connected_textures": "Spojené textury",
   "options.continuity.connected_textures.tooltip": "Zapnout či vypnout spojené textury bloků.",
   "options.continuity.emissive_textures": "Zářící textury",

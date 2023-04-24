@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Настройки Continuity",
+  "options.continuity.title": "Настройки Connectedness",
   "options.continuity.connected_textures": "Соединённые текстуры",
   "options.continuity.connected_textures.tooltip": "Включить/отключить соединённые текстуры блоков.",
   "options.continuity.emissive_textures": "Светящиеся текстуры",

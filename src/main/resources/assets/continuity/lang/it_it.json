@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Configurazione di Continuity",
+  "options.continuity.title": "Configurazione di Connectedness",
   "options.continuity.disable_ctm": "Disattiva CTM",
   "options.continuity.disable_ctm.tooltip": "Disattiva completamente le texture connesse.",
   "options.continuity.use_manual_culling": "Usa Culling Manuale",

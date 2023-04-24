@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Налаштування Continuity",
+  "options.continuity.title": "Налаштування Connectedness",
   "options.continuity.connected_textures": "З'єднані текстури",
   "options.continuity.connected_textures.tooltip": "Увімкнути/вимкнути з'єднані текстури для блоків.",
   "options.continuity.emissive_textures": "Текстури, що світяться",

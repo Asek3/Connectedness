@@ -1,5 +1,5 @@
 {
-  "options.continuity.title": "Paramètres de Continuity",
+  "options.continuity.title": "Paramètres de Connectedness",
   "options.continuity.connected_textures": "Textures Connectées",
   "options.continuity.connected_textures.tooltip": "Active ou désactive les textures connectées des blocs.",
   "options.continuity.emissive_textures": "Textures Émissives",
