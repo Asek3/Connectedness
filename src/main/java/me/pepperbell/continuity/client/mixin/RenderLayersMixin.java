@@ -10,7 +10,6 @@ import me.pepperbell.continuity.client.resource.CustomBlockLayers;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraftforge.client.ChunkRenderTypeSet;
 
 // TODO DEPRECATED ON FORGE
 @Mixin(RenderLayers.class)
@@ -25,12 +24,12 @@ public class RenderLayersMixin {
 		}
 	}
 	
-	@Inject(method = "getRenderLayers(Lnet/minecraft/block/BlockState;)Lnet/minecraftforge/client/ChunkRenderTypeSet;", at = @At("HEAD"), cancellable = true)
-	private static void continuity$onHeadGetBlockLayers(BlockState state, CallbackInfoReturnable<ChunkRenderTypeSet> cir) {
+	@Inject(method = "canRenderInLayer(Lnet/minecraft/block/BlockState;Lnet/minecraft/client/render/RenderLayer;)Z", at = @At("HEAD"), cancellable = true)
+	private static void continuity$onHeadGetBlockLayers(BlockState state, RenderLayer type, CallbackInfoReturnable<Boolean> cir) {
 		if (ContinuityConfig.INSTANCE.customBlockLayers.get()) {
 			RenderLayer layer = CustomBlockLayers.getLayer(state);
 			if (layer != null) {
-				cir.setReturnValue(ChunkRenderTypeSet.of(layer));
+				cir.setReturnValue(true);
 			}
 		}
 	}

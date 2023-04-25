@@ -45,7 +45,7 @@ import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -55,7 +55,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkConstants;
-import net.minecraftforge.resource.PathPackResources;
+import net.minecraftforge.resource.PathResourcePack;
 
 @Mod(ContinuityClient.ID)
 public class ContinuityClient {
@@ -237,12 +237,12 @@ public class ContinuityClient {
 		try {
 			if (event.getPackType() == ResourceType.CLIENT_RESOURCES) {
 				var resourcePath = ModList.get().getModFileById(ID).getFile().findResource("resourcepacks/default");
-				var pack = new PathPackResources(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
+				var pack = new PathResourcePack(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
 				var metadataSection = pack.parseMetadata(PackResourceMetadata.READER);
 				if (metadataSection != null) {
 					event.addRepositorySource((packConsumer, packConstructor) ->
 							packConsumer.accept(packConstructor.create(
-									"builtin/default_ctm_resources", Text.literal("Default CTM"), false,
+									"builtin/default_ctm_resources", new LiteralText("Default CTM"), false,
 									() -> pack, metadataSection, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN, false)));
 				}
 			}
@@ -256,12 +256,12 @@ public class ContinuityClient {
 		try {
 			if (event.getPackType() == ResourceType.CLIENT_RESOURCES) {
 				var resourcePath = ModList.get().getModFileById(ID).getFile().findResource("resourcepacks/glass_pane_culling_fix");
-				var pack = new PathPackResources(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
+				var pack = new PathResourcePack(ModList.get().getModFileById(ID).getFile().getFileName() + ":" + resourcePath, resourcePath);
 				var metadataSection = pack.parseMetadata(PackResourceMetadata.READER);
 				if (metadataSection != null) {
 					event.addRepositorySource((packConsumer, packConstructor) ->
 							packConsumer.accept(packConstructor.create(
-									"builtin/glass_pane_fix_resources", Text.literal("Glass pane culling fix"), false,
+									"builtin/glass_pane_fix_resources", new LiteralText("Glass pane culling fix"), false,
 									() -> pack, metadataSection, ResourcePackProfile.InsertionPosition.TOP, ResourcePackSource.PACK_SOURCE_BUILTIN, false)));
 				}
 			}

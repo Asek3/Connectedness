@@ -19,16 +19,17 @@ import me.pepperbell.continuity.client.resource.EmissiveSuffixLoader;
 import me.pepperbell.continuity.client.resource.ModelWrappingHandler;
 import me.pepperbell.continuity.client.resource.ResourcePackUtil;
 import me.pepperbell.continuity.client.util.biome.BiomeHolderManager;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraftforge.client.model.geometry.GeometryLoaderManager;
 
 @Mixin(ModelLoader.class)
 public class ModelLoaderMixin {
@@ -45,14 +46,12 @@ public class ModelLoaderMixin {
 	@Unique
 	private BlockState continuity$currentBlockState;
 	
-	@Redirect(
-	        method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V",
-	        at = @At(
-	            value = "INVOKE",
-	            target = "Lnet/minecraftforge/client/model/geometry/GeometryLoaderManager;init()V"
-	        )
-	    )
-	private void continuity$afterGeometryInit(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap) {
+	@Shadow
+	@Final
+	protected ResourceManager resourceManager;
+	
+	@Inject(method = "processLoading", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V", args = "ldc=missing_model", shift = At.Shift.BEFORE))
+	private void continuity$afterStoreArgs(Profiler profiler, int mipmap, CallbackInfo ci) {
 		// TODO: move these to the very beginning of resource reload
 		ResourcePackUtil.setup(resourceManager);
 		BiomeHolderManager.clearCache();
@@ -60,13 +59,21 @@ public class ModelLoaderMixin {
 		EmissiveSuffixLoader.load(resourceManager);
 		CTMPropertiesLoader.clearAll();
 		CTMPropertiesLoader.loadAll(resourceManager);
-		
-		GeometryLoaderManager.init();
+	}
+	
+	@Redirect(method = "processLoading", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;getStateManager()Lnet/minecraft/state/StateManager;"))
+    private StateManager<Block, BlockState> redirectGetStateManager(Block block) {
+        StateManager<Block, BlockState> stateManager = block.getStateManager();
+        stateManager.getStates().forEach(state -> {
+        	continuity$currentBlockState = state;
+            ModelIdentifier modelId = BlockModels.getModelId(state);
+            addModel(modelId);
+        });
+        return stateManager;
     }
-
-	@Inject(method = "m_119263_(Lnet/minecraft/block/BlockState;)V", at = @At("HEAD"))
-	private void continuity$onAddBlockStateModel(BlockState state, CallbackInfo ci) {
-		continuity$currentBlockState = state;
+	
+	@Shadow
+	private void addModel(ModelIdentifier modelId) {
 	}
 
 	@Inject(method = "addModel(Lnet/minecraft/client/util/ModelIdentifier;)V", at = @At(value = "TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
@@ -77,14 +84,13 @@ public class ModelLoaderMixin {
 		}
 	}
 	
-	@Redirect(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", ordinal = 4))
-	private void continuity$onFinishAddingModels(Profiler redirectedProfiler, String value, ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap) {
+	@Inject(method = "processLoading", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/util/profiler/Profiler;swap(Ljava/lang/String;)V", args = "ldc=textures"))
+	private void continuity$onFinishAddingModels(Profiler profiler, int mipmap, CallbackInfo ci) {
 		ModelWrappingHandler.wrapCTMModels(unbakedModels, modelsToBake);
-		redirectedProfiler.swap(value);
 	}
 
-	@Inject(method = "<init>(Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/client/color/block/BlockColors;Lnet/minecraft/util/profiler/Profiler;I)V", at = @At("TAIL"))
-	private void continuity$onTailInit(ResourceManager resourceManager, BlockColors blockColors, Profiler profiler, int mipmap, CallbackInfo ci) {
+	@Inject(method = "processLoading", at = @At("TAIL"))
+	private void continuity$onTail(Profiler profiler, int mipmap, CallbackInfo ci) {
 		ModelWrappingHandler.wrapEmissiveModels(spriteAtlasData, unbakedModels, modelsToBake);
 
 		CTMPropertiesLoader.clearAll();

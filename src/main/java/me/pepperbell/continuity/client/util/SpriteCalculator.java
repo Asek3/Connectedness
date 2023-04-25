@@ -3,6 +3,7 @@ package me.pepperbell.continuity.client.util;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Supplier;
 
@@ -17,9 +18,9 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockRenderView;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
 
 public final class SpriteCalculator {
 	private static final BlockModels MODELS = MinecraftClient.getInstance().getBakedModelManager().getBlockModels();
@@ -37,13 +38,13 @@ public final class SpriteCalculator {
 
 	public static Sprite calculateSprite(BlockState state, Direction face, Supplier<Random> randomSupplier, BlockRenderView view, BlockPos pos) {
 		BakedModel model = MODELS.getModel(state);
-		ModelData data = model.getModelData(view, pos, state, ModelData.EMPTY);
+		IModelData data = model.getModelData(view, pos, state, EmptyModelData.INSTANCE);
 		try {
-			List<BakedQuad> quads = model.getQuads(state, face, randomSupplier.get(), data, null);
+			List<BakedQuad> quads = model.getQuads(state, face, randomSupplier.get(), data);
 			if (!quads.isEmpty()) {
 				return quads.get(0).getSprite();
 			}
-			quads = model.getQuads(state, null, randomSupplier.get(), data, null);
+			quads = model.getQuads(state, null, randomSupplier.get(), data);
 			if (!quads.isEmpty()) {
 				int amount = quads.size();
 				for (int i = 0; i < amount; i++) {
@@ -70,7 +71,7 @@ public final class SpriteCalculator {
 		private final Direction face;
 		private final Map<BlockState, Sprite> sprites = new Object2ObjectOpenHashMap<>();
 		private final Supplier<Random> randomSupplier = new Supplier<>() {
-			private final Random random = Random.create();
+			private final Random random = new Random();
 
 			@Override
 			public Random get() {

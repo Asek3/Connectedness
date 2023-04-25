@@ -60,7 +60,7 @@ public class SpriteAtlasTextureMixin {
 					if (!id.getPath().endsWith(emissiveSuffix)) {
 						Identifier emissiveId = new Identifier(id.getNamespace(), id.getPath() + emissiveSuffix);
 						Identifier emissiveLocation = getTexturePath(emissiveId);
-						if (resourceManager.getResource(emissiveLocation).isPresent()) {
+						if (resourceManager.containsResource(emissiveLocation)) {
 							emissiveIds.add(emissiveId);
 							continuity$emissiveIdMap.put(id, emissiveId);
 						}

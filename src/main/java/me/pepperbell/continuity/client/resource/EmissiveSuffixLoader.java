@@ -1,8 +1,6 @@
 package me.pepperbell.continuity.client.resource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Optional;
+import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -27,16 +25,14 @@ public final class EmissiveSuffixLoader {
 	public static void load(ResourceManager manager) {
 		emissiveSuffix = null;
 
-		Optional<Resource> optionalResource = manager.getResource(LOCATION);
-		if (optionalResource.isPresent()) {
-			Resource resource = optionalResource.get();
-			try (InputStream inputStream = resource.getInputStream()) {
-				Properties properties = new Properties();
-				properties.load(inputStream);
-				emissiveSuffix = properties.getProperty("suffix.emissive");
-			} catch (IOException e) {
-				ContinuityClient.LOGGER.error("Failed to load emissive suffix from file '" + LOCATION + "'", e);
-			}
+		try (Resource resource = manager.getResource(LOCATION)) {
+			Properties properties = new Properties();
+			properties.load(resource.getInputStream());
+			emissiveSuffix = properties.getProperty("suffix.emissive");
+		} catch (FileNotFoundException e) {
+			//
+		} catch (Exception e) {
+			ContinuityClient.LOGGER.error("Failed to load emissive suffix from file '" + LOCATION + "'", e);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package me.pepperbell.continuity.client.model;
 
+import java.util.Random;
 import java.util.function.Supplier;
 
 import me.pepperbell.continuity.api.client.EmissiveSpriteApi;
@@ -21,7 +22,6 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockRenderView;
 
 public class EmissiveBakedModel extends ForwardingBakedModel {
