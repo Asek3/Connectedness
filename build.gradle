@@ -1,68 +1,105 @@
 plugins {
-	id 'dev.architectury.loom' version '0.11.0-SNAPSHOT'
-	id 'maven-publish'
+	id 'java'
+	id 'idea'
+	id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+	id 'org.spongepowered.mixin' version '0.7.+'
+	id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
-loom {
-    silentMojangMappingsLicense()
-	forge {
-		mixinConfigs = [
-			"connectedness.mixins.json"
-		]
+group = modgroup
+version = modversion
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+
+
+}
+
+minecraft {
+	mappings channel: "${mappingsch}", version: "${mappings_version}-${mcversion}"
+	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+	copyIdeResources = true
+	runs {
+		client {
+			taskName "runClient-${mcversion}"
+			workingDirectory project.file('run')
+			arg '-mixin.config=' + String.valueOf(modid) + '.mixin.json'
+			//jvmArgs '-XX:+UnlockCommercialFeatures' // uncomment for profiling
+			property 'forge.logging.console.level', 'info'
+			property 'terminal.jline', 'true'
+			property 'fml.earlyprogresswindow', 'false'
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+			mods {
+				"${modid}" {
+					source sourceSets.main
+				}
+			}
+		}
 	}
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
 
 repositories {
+	mavenCentral()
+	maven { url "https://repo.spongepowered.org/maven" }
+	maven { url "https://maven.tterrag.com/" }
 	maven {
-		url = "https://api.modrinth.com/maven"
+		url 'https://www.cursemaven.com'
+		content {
+			includeGroup "curse.maven"
+		}
+	}
+	maven {
+		url "https://maven.blamejared.com"
+	}
+	maven { url 'https://jitpack.io' }
+	flatDir {
+		dirs 'libs'
 	}
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-	
-	modImplementation "maven.modrinth:rubidium:${project.rubidium_version}"
-	modImplementation "maven.modrinth:reforgium:${project.reforgium_version}"
+	minecraft "net.minecraftforge:forge:${mcversion}-${fgversion}"
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+	// DEPENDENCIES
+	implementation fg.deobf("org.embeddedt:embeddium-${mcversion}:${embeddiumversion}")
+	implementation fg.deobf("curse.maven:reforgium-853424:${reforgiumversion}")
 }
 
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
-}
-
-java {
-	withSourcesJar()
+mixin {
+	add sourceSets.main, "${modid}.mixin-refmap.json"
 }
 
 jar {
+	manifest {
+		attributes([
+				"Specification-Title": "${modid}",
+				"Specification-Vendor": "${modauthor}",
+				"Specification-Version": "${modversion}",
+				"Implementation-Title": "${modname}",
+				"Implementation-Version": "${modversion}",
+				"Implementation-Vendor" : "${modauthor}",
+				"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+				"MixinConfigs": "${modid}.mixin.json"
+		])
+	}
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
+// Process target resources with mod info
+tasks.processResources.outputs.upToDateWhen { false }
+processResources {
+	filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+		expand(rootProject.properties)
 	}
+}
 
-	repositories {
-	}
+jar.finalizedBy('reobfJar')
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = 'UTF-8'
 }
